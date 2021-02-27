@@ -16,6 +16,10 @@
  * 
  */
 
+#if defined(__FreeBSD__)
+#include <sys/capsicum.h>
+#endif
+
 #include <err.h>
 #include <stdio.h>
 #include <string.h>
@@ -25,9 +29,13 @@
 #include <unistd.h>
 #endif
 
+#if defined(__FreeBSD__)
+#include <capsicum_helpers.h>
+#endif
+
 int
 main(){
-
+	/* OpenBSD pledge(2) limit to stdio group of syscalls */
 #if defined(__OpenBSD__)
 	if (pledge("stdio", NULL) == 1)
 		err(1, "pledge");
@@ -37,7 +45,27 @@ main(){
 	size_t linesize = 0;
 	ssize_t linelen;
 
+#if defined(__FreeBSD__)
+	cap_rights_t	rights;
+#endif
+
 	char *pch;
+
+	/*
+	 * FreeBSD rights(4) limit to all calls given by
+	 * pledge("stdio", NULL);
+	 */
+
+#if defined(__FreeBSD__)
+
+	if (cap_enter() < 0)
+		err(1, "cap_enter() failed");
+
+	cap_rights_init(&rights,\
+		CAP_FCNTL, CAP_FSTAT, CAP_FSYNC, CAP_FTRUNCATE, \
+			CAP_SEEK, CAP_WRITE,);
+
+#endif
 
 	while ((linelen = getline(&line, &linesize, stdin)) != -1){
 		if (line[0] != '0' \
