@@ -17,16 +17,21 @@
  */
 
 #include <err.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
+#if defined(__OpenBSD__)
+#include <unistd.h>
+#endif
+
 int
 main(){
 
+#if defined(__OpenBSD__)
 	if (pledge("stdio", NULL) == 1)
 		err(1, "pledge");
+#endif
 
 	char *line = NULL;
 	size_t linesize = 0;
