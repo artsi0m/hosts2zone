@@ -1,0 +1,5 @@
+hosts
+block.local
+*.core
+hosts2zone
+hosts2zone.awk
