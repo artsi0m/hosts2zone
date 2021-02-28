@@ -72,10 +72,15 @@ main(){
 	|| strncmp(line, "0.0.0.0 0.0.0.0\n", linesize) == 0 ) {
 		/* fallthrough on comment */ 
 				; } else {
+			/* Change '\n' into '"' */
+			line[strlen(line) - 1] = '"';
 
 			spnsz = strspn(line, "0.0.0.0 ");
-
-			printf("%s\n",line+spnsz);
+			/*
+			 * \x22 is '"' We need only one of them, 
+			 * because second '"' was acquired before
+			 */
+			printf("local-zone: \x22%s refuse\n",line+spnsz);
 		}
 	}
 	
