@@ -44,12 +44,12 @@ main(){
 	char *line = NULL;
 	size_t linesize = 0;
 	ssize_t linelen;
+	size_t spnsz;
 
 #if defined(__FreeBSD__)
 	cap_rights_t	rights;
 #endif
 
-	char *pch;
 
 	/*
 	 * FreeBSD rights(4) limit to all calls given by
@@ -73,12 +73,9 @@ main(){
 		/* fallthrough on comment */ 
 				; } else {
 
-			pch = strstr(line, "0.0.0.0 ");
-			if (pch != NULL)
-				/* 8 is number of chars in substring */
-				strncpy(pch, "", 8);
+			spnsz = strspn(line, "0.0.0.0 ");
 
-			fwrite(line, linelen, 1, stdout);
+			printf("%s\n",line+spnsz);
 		}
 	}
 	
