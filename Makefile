@@ -6,7 +6,5 @@ hosts2zone:
 fetch:
 	ftp http://sbc.io/hosts/hosts
 
-tests: fetch
-
 clean:
 	rm hosts2zone hosts
