@@ -42,9 +42,10 @@ main(){
 #endif
 
 	char *line = NULL;
-	size_t linesize = 0;
+	size_t line_size = 0;
 	ssize_t linelen;
 	size_t spnsz;
+	size_t line_maxlen = 255;
 
 #if defined(__FreeBSD__)
 	cap_rights_t	rights;
@@ -67,20 +68,25 @@ main(){
 
 #endif
 
-	while ((linelen = getline(&line, &linesize, stdin)) != -1){
+	while ((linelen = getline(&line, &line_size, stdin)) != -1){
 		if (line[0] != '0' \
-	|| strncmp(line, "0.0.0.0 0.0.0.0\n", linesize) == 0 ) {
+	|| strncmp(line, "0.0.0.0 0.0.0.0\n", line_size) == 0 ) {
 		/* fallthrough on comment */ 
 				; } else {
-			/* Change '\n' into '"' */
-			line[strlen(line) - 1] = '"';
+			/* Change LF line ending into double quote */
+			line[strnlen(line, line_maxlen) - 1] = '"';
 
 			spnsz = strspn(line, "0.0.0.0 ");
-			/*
-			 * \x22 is '"' We need only one of them, 
-			 * because second '"' was acquired before
+			/* 
+			 * \x22 is ANSI escape sequence for double quote
+			 * We need it only once, because previous was acquired
+			 * when we trimmed out newline.
+			 * line+spnsz is pointer to char with zeroes span'ed out
+			 * by strspn.
 			 */
-			printf("local-zone: \x22%s refuse\n",line+spnsz);
+			printf("local-zone: \x22%s refuse \n",\
+line+spnsz);
+
 		}
 	}
 	
