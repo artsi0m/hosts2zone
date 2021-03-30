@@ -1,10 +1,7 @@
-all: hosts2zone
+hosts2zone: hosts2zone.c
 
-hosts2zone: 
-	cc -D"__OpenBSD__" hosts2zone.c -Wall -Wextra -o hosts2zone
+dist: hosts2zone.c
+	cc hosts2zone.c -Wall -Wextra -Werror -o hosts2zone
 
-fetch:
-	ftp http://sbc.io/hosts/hosts
-
-clean:
-	rm hosts2zone hosts hosts2zone.core
+debug: hosts2zone.c
+	cc hosts2zone.c -O0 -Wall -Wextra -g -o hosts2zone

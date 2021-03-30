@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) Feb, March 2021 Artsiom <karakin2000@gmail.com>
+ * Copyright (c) 2021 Artsiom <karakin2000@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,30 +16,19 @@
  * 
  */
 
-#if defined(__FreeBSD__)
-#include <sys/capsicum.h>
-#endif
+#include <unistd.h>
 
 #include <err.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-#if defined(__OpenBSD__)
-#include <unistd.h>
-#endif
-
-#if defined(__FreeBSD__)
-#include <capsicum_helpers.h>
-#endif
-
 int
+
 main(){
 	/* OpenBSD pledge(2) limit to stdio group of syscalls */
-#if defined(__OpenBSD__)
 	if (pledge("stdio", NULL) == 1)
 		err(1, "pledge");
-#endif
 
 	char *line = NULL;
 	size_t line_size = 0;
@@ -47,26 +36,8 @@ main(){
 	size_t spnsz;
 	size_t line_maxlen = 255;
 
-#if defined(__FreeBSD__)
-	cap_rights_t	rights;
-#endif
 
 
-	/*
-	 * FreeBSD rights(4) limit to all calls given by
-	 * pledge("stdio", NULL);
-	 */
-
-#if defined(__FreeBSD__)
-
-	if (cap_enter() < 0)
-		err(1, "cap_enter() failed");
-
-	cap_rights_init(&rights,\
-		CAP_FCNTL, CAP_FSTAT, CAP_FSYNC, CAP_FTRUNCATE, \
-			CAP_SEEK, CAP_WRITE,);
-
-#endif
 
 	while ((linelen = getline(&line, &line_size, stdin)) != -1){
 		if (line[0] != '0' \
