@@ -24,8 +24,7 @@
 #include <stdlib.h>
 
 int
-
-main(){
+main(void){
 	/* OpenBSD pledge(2) limit to stdio group of syscalls */
 	if (pledge("stdio", NULL) == 1)
 		err(1, "pledge");
@@ -57,11 +56,12 @@ main(){
 			 */
 			printf("local-zone: \x22%s refuse \n",\
 line+spnsz);
+		    free(line);
 
 		}
 	}
 	
-	free(line);
+
 	if (ferror(stdin))
 		err(1, "getline");
 }
