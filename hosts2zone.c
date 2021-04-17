@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) Feb, March 2021 Artsiom <karakin2000@gmail.com>
+ * Copyright (c) 2021 Artsiom <karakin2000@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+
 #if defined(__OpenBSD__)
 #include <unistd.h>
 #endif
@@ -34,7 +35,7 @@
 #endif
 
 int
-main(){
+main(void){
 	/* OpenBSD pledge(2) limit to stdio group of syscalls */
 #if defined(__OpenBSD__)
 	if (pledge("stdio", NULL) == 1)
@@ -86,11 +87,12 @@ main(){
 			 */
 			printf("local-zone: \x22%s refuse \n",\
 line+spnsz);
+		    free(line);
 
 		}
 	}
 	
-	free(line);
+
 	if (ferror(stdin))
 		err(1, "getline");
 }
