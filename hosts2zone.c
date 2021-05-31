@@ -56,11 +56,10 @@ main(void){
 			 */
 			printf("local-zone: \x22%s refuse \n",\
 line+spnsz);
-		    free(line);
-
 		}
 	}
 	
+		    free(line);
 
 	if (ferror(stdin))
 		err(1, "getline");
