@@ -1,0 +1,29 @@
+# https://git.sr.ht/~sircmpwn/cstyle
+BasedOnStyle: LLVM
+ColumnLimit: 80
+IndentWidth: 8
+TabWidth: 8
+ContinuationIndentWidth: 8
+AlignAfterOpenBracket: DontAlign
+AlwaysBreakAfterReturnType: AllDefinitions # split func def and type 
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortLoopsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: false
+BreakBeforeBraces: Custom
+BinPackParameters: false
+BinPackArguments: false
+ReflowComments: false
+SortIncludes: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeSquareBrackets: false
+IndentCaseLabels: false
+SpacesInCStyleCastParentheses: false
+UseTab: Always
+BraceWrapping:
+  AfterFunction: true
+  AfterControlStatement: Never
+  AfterCaseLabel: false
+  AfterEnum: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeElse: false

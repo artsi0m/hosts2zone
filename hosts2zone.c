@@ -24,10 +24,12 @@
 #include <stdlib.h>
 
 int
-main(void){
+main(void)
+{
 	/* OpenBSD pledge(2) limit to stdio group of syscalls */
-	if (pledge("stdio", NULL) == 1)
+	if (pledge("stdio", NULL) == 1) {
 		err(1, "pledge");
+	}
 
 	char *line = NULL;
 	size_t line_size = 0;
@@ -35,32 +37,33 @@ main(void){
 	size_t spnsz;
 	size_t line_maxlen = 255;
 
-
-
-
-	while ((linelen = getline(&line, &line_size, stdin)) != -1){
-		if (line[0] != '0' \
-	|| strncmp(line, "0.0.0.0 0.0.0.0\n", line_size) == 0 ) {
-		/* fallthrough on comment */ 
-				; } else {
+	while ((linelen = getline(&line, &line_size, stdin)) != -1) {
+		if (line[0] != '0' ||
+			strncmp(line, "0.0.0.0 0.0.0.0\n", line_size) == 0) {
+			/* fallthrough 
+		 	 * on lines not equal to 0.0.0.0 domain pattern 
+			 */
+			;
+		} else {
 			/* Change LF line ending into double quote */
 			line[strnlen(line, line_maxlen) - 1] = '"';
 
 			spnsz = strspn(line, "0.0.0.0 ");
 			/* 
 			 * \x22 is ANSI escape sequence for double quote
-			 * We need it only once, because previous was acquired
+			 * We need it only once,
+			 * because previous was acquired
 			 * when we trimmed out newline.
-			 * line+spnsz is pointer to char with zeroes span'ed out
-			 * by strspn.
+			 * line+spnsz is pointer to char 
+			 * with zeroes span'ed out by strspn.
 			 */
-			printf("local-zone: \x22%s refuse \n",\
-line+spnsz);
+			printf("local-zone: \x22%s refuse \n", line + spnsz);
 		}
 	}
-	
-		    free(line);
 
-	if (ferror(stdin))
+	free(line);
+
+	if (ferror(stdin)) {
 		err(1, "getline");
+	}
 }
