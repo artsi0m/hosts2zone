@@ -1,6 +1,5 @@
 /*
- *
- * Copyright (c) Feb, March 2021 Artsiom <karakin2000@gmail.com>
+ * Copyright (c) 2021 Artsiom <aning@protonmail.ch>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,7 +12,7 @@
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- * 
+ *
  */
 
 #if defined(__FreeBSD__)
@@ -22,8 +21,8 @@
 
 #include <err.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if defined(__OpenBSD__)
 #include <unistd.h>
@@ -34,7 +33,8 @@
 #endif
 
 int
-main(){
+main()
+{
 	/* OpenBSD pledge(2) limit to stdio group of syscalls */
 #if defined(__OpenBSD__)
 	if (pledge("stdio", NULL) == 1)
@@ -48,9 +48,8 @@ main(){
 	size_t line_maxlen = 255;
 
 #if defined(__FreeBSD__)
-	cap_rights_t	rights;
+	cap_rights_t rights;
 #endif
-
 
 	/*
 	 * FreeBSD rights(4) limit to all calls given by
@@ -62,34 +61,42 @@ main(){
 	if (cap_enter() < 0)
 		err(1, "cap_enter() failed");
 
-	cap_rights_init(&rights,\
-		CAP_FCNTL, CAP_FSTAT, CAP_FSYNC, CAP_FTRUNCATE, \
-			CAP_SEEK, CAP_WRITE,);
+	cap_rights_init(&rights, CAP_FCNTL, CAP_FSTAT, CAP_FSYNC, CAP_FTRUNCATE,
+			CAP_SEEK, CAP_WRITE, );
 
 #endif
 
-	while ((linelen = getline(&line, &line_size, stdin)) != -1){
-		if (line[0] != '0' \
-	|| strncmp(line, "0.0.0.0 0.0.0.0\n", line_size) == 0 ) {
-		/* fallthrough on comment */ 
-				; } else {
+/* 
+ * while((linelen = getline(&line, &line_size, stdin)) != -1) {
+ *  gsub("0.0.0.0", sub, &line); to substitute line
+ *  gred("0.0.0.0 0.0.0.0", &line);
+ *  gsub("127.0.0.1", sub, &line); to substitute line
+ *  gred("127.0.0.1 127.0.0.1", &line); 
+ *}
+ * 
+ * 
+ */
+	while ((linelen = getline(&line, &line_size, stdin)) != -1) {
+		if (line[0] != '0' ||
+		    strncmp(line, "0.0.0.0 0.0.0.0\n", line_size) == 0) {
+			/* fallthrough on comment */
+			;
+		} else {
 			/* Change LF line ending into double quote */
 			line[strnlen(line, line_maxlen) - 1] = '"';
 
 			spnsz = strspn(line, "0.0.0.0 ");
-			/* 
+			/*
 			 * \x22 is ANSI escape sequence for double quote
 			 * We need it only once, because previous was acquired
 			 * when we trimmed out newline.
 			 * line+spnsz is pointer to char with zeroes span'ed out
 			 * by strspn.
 			 */
-			printf("local-zone: \x22%s refuse \n",\
-line+spnsz);
-
+			printf("local-zone: \x22%s refuse \n", line + spnsz);
 		}
 	}
-	
+
 	free(line);
 	if (ferror(stdin))
 		err(1, "getline");
