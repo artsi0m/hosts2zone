@@ -1,13 +1,8 @@
-all: hosts2zone gsub
+# BSD Make Makefile
 
-gsub:
-	cc gsub.c -Wall -Wextra -o gsub
+PROG	= hosts2zone
+SRCS	= hosts2zone.c
+MAN	=
+CFLAGS	= -Wall -Wextra
 
-hosts2zone: 
-	cc hosts2zone.c -Wall -Wextra -o hosts2zone
-
-fetch:
-	ftp http://sbc.io/hosts/hosts
-
-clean:
-	rm hosts2zone hosts
+.include <bsd.prog.mk>

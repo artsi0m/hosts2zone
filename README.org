@@ -14,7 +14,7 @@ Short roadmap on improving situation with smelling code:
 hosts(5) says that lines in file are already limited to
 BUFSIZ characters (currently 1024).
 
-*** TODO Rewrite makefile
+*** DONE Rewrite makefile
 
 Use includes and BSD make.
 
