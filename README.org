@@ -1,0 +1,30 @@
+* hosts2zone
+
+** Description
+
+Convert entries from /etc/hosts to unbound local zone
+hat is my old code and therefore it smells
+
+** Roadmap
+
+Short roadmap on improving situation with smelling code:
+
+*** TODO Use fgets(3) instead of getline(3) 
+
+hosts(5) says that lines in file are already limited to
+BUFSIZ characters (currently 1024).
+
+*** TODO Rewrite makefile
+
+Use includes and BSD make.
+
+*** TODO Rewrite parsing
+
+I need to rewrite hosts parsing.
+he best way is found out how system does it already.
+/etc/hosts is parsed by gethostbyname() by default,
+some code can be borrowed from here.
+
+*** TODO Delete portability.
+
+It was not tested and is done messy by ifdef macros.
