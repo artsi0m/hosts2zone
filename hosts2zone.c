@@ -15,75 +15,37 @@
  *
  */
 
-#if defined(__FreeBSD__)
-#include <sys/capsicum.h>
-#endif
+#define BUFSIZ	1024
 
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(__OpenBSD__)
 #include <unistd.h>
-#endif
-
-#if defined(__FreeBSD__)
-#include <capsicum_helpers.h>
-#endif
 
 int
 main()
 {
 	/* OpenBSD pledge(2) limit to stdio group of syscalls */
-#if defined(__OpenBSD__)
 	if (pledge("stdio", NULL) == 1)
 		err(1, "pledge");
-#endif
 
-	char *line = NULL;
-	size_t line_size = 0;
-	ssize_t linelen;
+	char *line;
 	size_t spnsz;
-	size_t line_maxlen = 255;
 
-#if defined(__FreeBSD__)
-	cap_rights_t rights;
-#endif
+	if ((line = calloc(sizeof(char), BUFSIZ)) == NULL)
+		err(1, NULL);
 
-	/*
-	 * FreeBSD rights(4) limit to all calls given by
-	 * pledge("stdio", NULL);
-	 */
 
-#if defined(__FreeBSD__)
-
-	if (cap_enter() < 0)
-		err(1, "cap_enter() failed");
-
-	cap_rights_init(&rights, CAP_FCNTL, CAP_FSTAT, CAP_FSYNC, CAP_FTRUNCATE,
-			CAP_SEEK, CAP_WRITE, );
-
-#endif
-
-/* 
- * while((linelen = getline(&line, &line_size, stdin)) != -1) {
- *  gsub("0.0.0.0", sub, &line); to substitute line
- *  gred("0.0.0.0 0.0.0.0", &line);
- *  gsub("127.0.0.1", sub, &line); to substitute line
- *  gred("127.0.0.1 127.0.0.1", &line); 
- *}
- * 
- * 
- */
-	while ((linelen = getline(&line, &line_size, stdin)) != -1) {
+	while ((fgets(line, BUFSIZ, stdin)) != NULL) {
 		if (line[0] != '0' ||
-		    strncmp(line, "0.0.0.0 0.0.0.0\n", line_size) == 0) {
+		    strncmp(line, "0.0.0.0 0.0.0.0\n", BUFSIZ) == 0) {
 			/* fallthrough on comment */
 			;
 		} else {
 			/* Change LF line ending into double quote */
-			line[strnlen(line, line_maxlen) - 1] = '"';
+			line[strnlen(line, BUFSIZ) - 1] = '"';
 
 			spnsz = strspn(line, "0.0.0.0 ");
 			/*
@@ -97,7 +59,4 @@ main()
 		}
 	}
 
-	free(line);
-	if (ferror(stdin))
-		err(1, "getline");
 }
